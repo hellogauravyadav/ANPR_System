@@ -1,0 +1,47 @@
+# ============================================================
+#  ANPR configuration  (edit here instead of touching the code)
+#  Paths are relative to the project root.
+# ============================================================
+
+detector:
+  weights: weights/best.pt      # trained in Colab (notebooks/01_train_plate_detector_colab.ipynb)
+  conf: 0.35                    # detector confidence threshold (use the best-F1 value printed in Colab)
+  iou: 0.50                     # NMS IoU threshold
+  imgsz: 640                    # inference size; 480 is faster on weak GPUs, 960 sees smaller plates
+  device: auto                  # auto | cpu | 0 | cuda:0
+  half: true                    # FP16 inference (only used when a CUDA GPU is present)
+  max_det: 20
+  tracker: bytetrack.yaml       # bytetrack.yaml | botsort.yaml  (ships with ultralytics)
+
+ocr:
+  enabled: true
+  languages: [en]
+  gpu: auto                     # auto | true | false
+  every_n_frames: 5             # re-read an unlocked plate every N frames
+  max_per_frame: 2              # cap OCR calls per frame so FPS stays smooth
+  min_plate_width: 40           # px - plates narrower than this are too small to read
+  pad: 0.08                     # extra border around the crop (fraction of box size)
+  min_text_conf: 0.25           # ignore OCR reads below this confidence
+  min_sharpness: 8.0            # Laplacian variance gate; 0 disables the blur check
+  lock_votes: 3                 # identical valid reads needed to "lock" a plate
+  lock_conf: 0.60               # ...with at least this OCR confidence
+
+tracking:
+  max_history: 15               # OCR reads kept per track for voting
+  stale_after: 30               # frames without detection before a track is closed
+
+display:
+  show_breakdown: true          # second line: det xx% | ocr xx%
+  spaced_text: true             # RJ 14 AB 1234 instead of RJ14AB1234
+  box_thickness: 2
+  show_hud: true
+
+output:
+  dir: outputs
+  log_csv: true                 # one row per finished plate track
+  save_crops: true              # save the best crop of every logged plate
+  min_log_score: 0.50           # do not log plates below this combined score
+
+camera:
+  width: 1280
+  height: 720
